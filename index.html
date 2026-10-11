@@ -199,7 +199,7 @@ window.WORDBANK = (() => {
 
 </script>
   <script>
-const $=s=>document.querySelector(s), $=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const KEY='tibi-progress-v1';
 let state=load(), session=[], index=0, current=null, usedHint=false, checked=false;
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||fresh()}catch{return fresh()}}
@@ -214,7 +214,7 @@ function buildSession(){
   session=[...due.slice(0,10),...unseen.slice(0,Math.max(5,15-due.length))].slice(0,15);
   if(session.length<15) session.push(...WORDBANK.filter(w=>!session.includes(w)).sort((a,b)=>value(b)-value(a)).slice(0,15-session.length));
 }
-function showView(id){$('.view').forEach(v=>v.classList.toggle('active',v.id===id));$('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));if(id==='library')renderLibrary();if(id==='progress')renderProgress();window.scrollTo(0,0)}
+function showView(id){$$('.view').forEach(v=>v.classList.toggle('active',v.id===id));$$('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));if(id==='library')renderLibrary();if(id==='progress')renderProgress();window.scrollTo(0,0)}
 function speak(){if(!current)return; speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(`${current.word}。${current.sentence}`);u.lang='zh-CN';u.rate=.72;speechSynthesis.speak(u)}
 function showWord(){current=session[index];usedHint=false;checked=false;$('#answerInput').value='';$('#answerInput').disabled=false;$('#answerWrap').classList.remove('is-disabled');$('#feedback').innerHTML='';$('#checkBtn').classList.remove('hidden');$('#nextBtn').classList.add('hidden');$('#hintBtn').disabled=false;$('#practiceProgress').textContent=`${index+1} / ${session.length}`;$('#progressFill').style.width=`${index/session.length*100}%`;$('#practiceMode').textContent=recordFor(current).seen?'复习':'新词';$('#sentence').textContent=`【${current.kind}】${current.sentence.replaceAll(current.word,'＿＿')}`;setTimeout(speak,350);setTimeout(()=>$('#answerInput').focus(),500)}
 function start(){buildSession();index=0;showView('practice');showWord()}
@@ -234,7 +234,7 @@ function renderLibrary(){let level=$('.chip.active').dataset.level,q=$('#searchI
 function renderProgress(){let records=Object.values(state.words);$('#trainedStat').textContent=records.length;$('#attemptStat').textContent=state.attempts;$('#accuracyStat').textContent=state.attempts?`${Math.round(state.correct/state.attempts*100)}%`:'—';$('#masteredStat').textContent=records.filter(r=>r.box>=3).length;let weak=WORDBANK.filter(w=>recordFor(w).seen).sort((a,b)=>value(b)-value(a)).slice(0,8);$('#weakList').innerHTML=weak.length?weak.map(w=>{let r=recordFor(w),p=Math.min(100,20+r.wrong*18);return`<div class="weak-row"><b>${w.word}</b><div class="bar"><i style="width:${p}%"></i></div><small>错 ${r.wrong} 次</small></div>`}).join(''):'<p>完成一次训练后，这里会显示需要巩固的词。</p>'}
 function exportData(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download=`提笔学习记录-${day()}.json`;a.click();URL.revokeObjectURL(a.href)}
 function toast(t){let e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}
-$('.nav').forEach(n=>n.onclick=()=>showView(n.dataset.view));$('#startBtn').onclick=start;$('#exitPractice').onclick=()=>showView('home');$('#speakBtn').onclick=speak;$('#checkBtn').onclick=check;$('#nextBtn').onclick=next;$('#hintBtn').onclick=hint;$('#clearAnswer').onclick=()=>{$('#answerInput').value='';$('#answerInput').focus()};$('#answerInput').onkeydown=e=>{if(e.key==='Enter')checked?next():check()};$('.chip').forEach(c=>c.onclick=()=>{$('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderLibrary()});$('#searchInput').oninput=renderLibrary;$('#exportBtn').onclick=exportData;$('#importInput').onchange=async e=>{try{let s=JSON.parse(await e.target.files[0].text());if(!s.words)throw 0;state=s;save();renderProgress();toast('学习记录已导入')}catch{toast('无法读取这个备份文件')}};$('#resetBtn').onclick=()=>{if(confirm('确定清空全部学习记录吗？此操作无法撤销。')){state=fresh();save();renderProgress();toast('学习记录已清空')}};
+$$('.nav').forEach(n=>n.onclick=()=>showView(n.dataset.view));$('#startBtn').onclick=start;$('#exitPractice').onclick=()=>showView('home');$('#speakBtn').onclick=speak;$('#checkBtn').onclick=check;$('#nextBtn').onclick=next;$('#hintBtn').onclick=hint;$('#clearAnswer').onclick=()=>{$('#answerInput').value='';$('#answerInput').focus()};$('#answerInput').onkeydown=e=>{if(e.key==='Enter')checked?next():check()};$$('.chip').forEach(c=>c.onclick=()=>{$$('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderLibrary()});$('#searchInput').oninput=renderLibrary;$('#exportBtn').onclick=exportData;$('#importInput').onchange=async e=>{try{let s=JSON.parse(await e.target.files[0].text());if(!s.words)throw 0;state=s;save();renderProgress();toast('学习记录已导入')}catch{toast('无法读取这个备份文件')}};$('#resetBtn').onclick=()=>{if(confirm('确定清空全部学习记录吗？此操作无法撤销。')){state=fresh();save();renderProgress();toast('学习记录已清空')}};
 $('#dateLabel').textContent=new Intl.DateTimeFormat('zh-CN',{month:'long',day:'numeric',weekday:'long'}).format(new Date());renderDashboard();
 
 </script>
